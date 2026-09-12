@@ -67,7 +67,17 @@ function AgeTimeline({ question, language, value, onChange }: { question: Questi
 }
 
 export function ChoiceQuestion({ question, language, value, onChange }: { question: Question; language: Language; value?: string; onChange: (value: string) => void }) {
-  if (question.id === "P3") return <AgeTimeline question={question} language={language} value={value} onChange={onChange} />;
-  if (question.id === "G_CONSUMED") return <Cards question={question} language={language} value={value} onChange={onChange} className="thesis-choice-grid--binary" />;
+  if (question.id === "G_CONSUMED") {
+    return (
+      <Cards
+        question={question}
+        language={language}
+        value={value}
+        onChange={onChange}
+        className="thesis-choice-grid--binary"
+      />
+    );
+  }
+
   return <Cards question={question} language={language} value={value} onChange={onChange} />;
 }
