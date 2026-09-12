@@ -1,8 +1,8 @@
 import { questions, STUDY_VERSION } from "@/config/study";
 import type { FeatureMarker, Language } from "@/types/questionnaire";
 
-const NULLABLE_RESPONSE_MS_FIXED_V22 = "NULLABLE_RESPONSE_MS_FIXED_V22";
-void NULLABLE_RESPONSE_MS_FIXED_V22;
+const NULLABLE_RESPONSE_MS_FIXED_V23 = "NULLABLE_RESPONSE_MS_FIXED_V23";
+void NULLABLE_RESPONSE_MS_FIXED_V23;
 
 export type SubmissionPayload = {
   submission: Record<string, unknown>;

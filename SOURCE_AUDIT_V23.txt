@@ -1,0 +1,22 @@
+MPA-Index Thesis Questionnaire FINAL v23 - Post-Pilot Source Audit
+
+SOURCE: thesis questionnaire English- after pilot test - 3 mediators.docx
+
+PASS: 53 core questionnaire screens when food/drink was consumed.
+PASS: 49 core questionnaire screens when G_CONSUMED = No (G2-G5 skipped).
+PASS: All 44 English Likert statements match the uploaded post-pilot instrument exactly by code and wording.
+PASS: 3 committed study routes mapped to T1 Prince Hasan St., T2 Al-Hussain Bin Ali St., T3 King Talal St.
+PASS: Section A contains A1-A7 field/profile questions.
+PASS: Section B contains V1-V6, auditory A1-A6, O1-O4, T1-T5, G1-G5 with conditional consumption logic.
+PASS: Section C contains CTX1-CTX3 and remains contextual / not Fuzzy-AHP weighted.
+PASS: Section D contains exactly three mediators: SAT1-SAT3, MEM1-MEM3, SEC1-SEC3.
+PASS: Former D4 / ID1-ID2 block removed from the final post-pilot instrument.
+PASS: Section E contains PI1-PI3 and PD1-PD3.
+PASS: Conditional G2-G5 answers are cleared if G_CONSUMED changes to No.
+PASS: Section-specific segmented-scale palettes retained.
+PASS: Refresh-safe local persistence retained under a new v23 storage key.
+PASS: Reset-to-beginning confirmation retained.
+PASS: Final selected-route image annotation task retained as supplemental data.
+PASS: Optional final open-ended feedback retained as supplemental data.
+PASS: Research CSV export order updated for FINAL v23 IDs.
+PASS: Research dashboard/export filter on FINAL v23 questionnaire_version to avoid mixing pilot records with final fieldwork.

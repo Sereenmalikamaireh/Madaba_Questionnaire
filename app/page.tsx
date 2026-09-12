@@ -11,8 +11,8 @@ import { buildSubmissionPayload } from "@/lib/payload";
 import { flushQueue, getQueuedPayloads, postPayload, queuePayload, removeQueuedPayload } from "@/lib/offlineQueue";
 import type { FeatureMarker, FeatureTag, Language, QuestionTheme } from "@/types/questionnaire";
 
-const FINAL_V22_RUNTIME_MARKER = "FINAL_V22_RUNTIME_MARKER";
-void FINAL_V22_RUNTIME_MARKER;
+const FINAL_V23_RUNTIME_MARKER = "FINAL_V23_RUNTIME_MARKER";
+void FINAL_V23_RUNTIME_MARKER;
 
 type Stage = "start" | "language" | "consent" | "survey" | "image" | "feedback" | "complete";
 type SaveStatus = "idle" | "saving" | "saved" | "queued" | "error";
@@ -43,7 +43,6 @@ const themeMeta: Record<QuestionTheme, { icon: string; kicker: { en: string; ar:
   satisfaction: { icon: "✓", kicker: { en: "Satisfaction", ar: "الرضا" }, prompt: { en: "Think only about the trail or trail segment you have just experienced.", ar: "فكّر فقط في المسار أو جزء المسار الذي اختبرته للتو." } },
   memory: { icon: "◇", kicker: { en: "Memory", ar: "الذاكرة" }, prompt: { en: "Think only about the trail or trail segment you have just experienced.", ar: "فكّر فقط في المسار أو جزء المسار الذي اختبرته للتو." } },
   security: { icon: "⌂", kicker: { en: "Perceived security", ar: "الأمان المدرك" }, prompt: { en: "Think only about the trail or trail segment you have just experienced.", ar: "فكّر فقط في المسار أو جزء المسار الذي اختبرته للتو." } },
-  identity: { icon: "◫", kicker: { en: "Heritage identity resonance", ar: "صدى الهوية التراثية" }, prompt: { en: "Think only about the trail or trail segment you have just experienced.", ar: "فكّر فقط في المسار أو جزء المسار الذي اختبرته للتو." } },
   place_identity: { icon: "◆", kicker: { en: "Place identity", ar: "هوية المكان" }, prompt: { en: "Think about what this trail means to you.", ar: "فكّر فيما يعنيه هذا المسار بالنسبة لك." } },
   place_dependence: { icon: "↔", kicker: { en: "Place dependence", ar: "الاعتماد على المكان" }, prompt: { en: "Think about how well this trail supports the activities you want to do here.", ar: "فكّر في مدى ملاءمة هذا المسار للأنشطة التي تريد القيام بها هنا." } },
 };
@@ -54,7 +53,7 @@ function journeyForSection(section: string): JourneyStage {
   if (section === "profile") return "about";
   if (["visual", "auditory", "olfactory", "tactile", "gustatory"].includes(section)) return "sensory";
   if (section === "contextual") return "context";
-  if (["satisfaction", "memory", "security", "identity"].includes(section)) return "psychological";
+  if (["satisfaction", "memory", "security"].includes(section)) return "psychological";
   if (["place_identity", "place_dependence"].includes(section)) return "attachment";
   return "about";
 }
@@ -309,7 +308,7 @@ export default function Home() {
     return <header className="topbar"><div className="topbar__inner">
       <div className="brand"><span className="brand__mark">M</span><span><b>MPA-Index</b><small>{t("Madaba Heritage Walking Trails", "مسارات مادبا التراثية")}</small></span></div>
       {(stage === "survey" || stage === "image" || stage === "feedback" || stage === "complete") && <div className="topbar__progress"><StageProgress language={language} active={activeStage} percent={percent} /></div>}
-      <div className="topbar__actions"><span className="final-build-badge">THESIS QUESTIONNAIRE · FINAL v22</span>{queueCount > 0 && <span className="queue-pill">{queueCount} ⟳</span>}{stage !== "start" && <button type="button" className="reset-session-button" onClick={() => setResetConfirmOpen(true)}>{t("Reset", "إعادة البدء")}</button>}<button type="button" className="language-button" onClick={() => setLanguage((previous) => previous === "en" ? "ar" : "en")}>{language === "en" ? "العربية" : "English"}</button></div>
+      <div className="topbar__actions"><span className="final-build-badge">THESIS QUESTIONNAIRE · FINAL v23</span>{queueCount > 0 && <span className="queue-pill">{queueCount} ⟳</span>}{stage !== "start" && <button type="button" className="reset-session-button" onClick={() => setResetConfirmOpen(true)}>{t("Reset", "إعادة البدء")}</button>}<button type="button" className="language-button" onClick={() => setLanguage((previous) => previous === "en" ? "ar" : "en")}>{language === "en" ? "العربية" : "English"}</button></div>
     </div></header>;
   }
 
@@ -404,7 +403,7 @@ export default function Home() {
       { label: t("Auditory experience", "التجربة السمعية"), value: mean(["AUD1","AUD2","AUD3","AUD4","AUD5","AUD6"].map((id) => scoreValue(answers[id]))) },
       { label: t("Olfactory experience", "التجربة الشمية"), value: mean(["O1","O2","O3","O4"].map((id) => scoreValue(answers[id]))) },
       { label: t("Tactile / walking surface", "اللمس / سطح المشي"), value: mean(["T1","T2","T3","T4","T5"].map((id) => scoreValue(answers[id]))) },
-      { label: t("Satisfaction", "الرضا"), value: mean(["SAT1","SAT2"].map((id) => scoreValue(answers[id]))) },
+      { label: t("Satisfaction", "الرضا"), value: mean(["SAT1","SAT2","SAT3"].map((id) => scoreValue(answers[id]))) },
       { label: t("Place attachment", "الارتباط بالمكان"), value: mean(["PI1","PI2","PI3","PD1","PD2","PD3"].map((id) => scoreValue(answers[id]))) },
     ];
     return <div className="participant-summary"><div className="summary-heading"><div><p className="eyebrow">{t("Your responses at a glance", "نظرة سريعة على إجاباتك")}</p><h2>{selectedTrail?.name[language] ?? t("Your Madaba walk", "جولتك في مادبا")}</h2></div><span className="summary-note">{t("Descriptive only · not an assessment score", "وصفي فقط · ليس نتيجة تقييم")}</span></div><div className="summary-bars">{rows.map((row) => <div className="summary-row" key={row.label}><span>{row.label}</span><div><i style={{ width: `${((row.value ?? 0) / 5) * 100}%` }} /></div><b>{row.value ? row.value.toFixed(1) : "—"}/5</b></div>)}</div>{featureMarkers.length > 0 && <p className="summary-note">{t(`${featureMarkers.length} influential street element(s) were marked.`, `تم تحديد ${featureMarkers.length} عنصر/عناصر مؤثرة في الشارع.`)}</p>}</div>;
@@ -413,7 +412,7 @@ export default function Home() {
   if (!hydrated) return <main className="loading-screen">MPA-Index</main>;
 
   return <div dir={isArabic ? "rtl" : "ltr"} lang={language} className="app-shell">{renderTopBar()}<main className="main-area">
-    {stage === "start" && <section className="hero-card hero-card--v7"><div className="hero-card__content"><p className="eyebrow">MPA-Index · Field Questionnaire</p><h1>{t("Multisensory Perception, Psychological Mediators & Place Attachment", "الإدراك متعدد الحواس والوسائط النفسية والارتباط بالمكان")}</h1><p>{t("A field questionnaire about Madaba's heritage walking trails. Think only about the trail or trail segment you have just experienced.", "استبيان ميداني حول مسارات المشي التراثية في مادبا. فكّر فقط في المسار أو جزء المسار الذي اختبرته للتو.")}</p><div className="hero-chips"><span>3 {t("study trails", "مسارات للدراسة")}</span><span>{t("Conditional food/drink block", "قسم شرطي للطعام والشراب")}</span><span>{t("Street image task", "مهمة صورة الشارع")}</span><span>{t("Optional final feedback", "ملاحظات نهائية اختيارية")}</span><span>{t("Refresh-safe progress", "يحفظ التقدم عند التحديث")}</span></div><button className="primary-button hero-button" type="button" onClick={() => { mark("started_at"); setStage("language"); }}>{t("Begin", "ابدأ")}</button></div><div className="hero-card__media"><figure className="hero-photo-frame"><img src="/hero-madaba-sharp.jpg" alt={t("Madaba heritage walking street", "شارع مشي تراثي في مادبا")} /><figcaption><span>{t("Madaba heritage walking environment", "بيئة مشي تراثية في مادبا")}</span><b>MPA · INDEX</b></figcaption></figure></div></section>}
+    {stage === "start" && <section className="hero-card hero-card--v7"><div className="hero-card__content"><p className="eyebrow">MPA-Index · Field Questionnaire</p><h1>{t("Multisensory perception, psychological mediators, and place attachment", "الإدراك متعدد الحواس والوسائط النفسية والارتباط بالمكان")}</h1><p>{t("A field questionnaire about Madaba's heritage walking trails. Think only about the trail or trail segment you have just experienced.", "استبيان ميداني حول مسارات المشي التراثية في مادبا. فكّر فقط في المسار أو جزء المسار الذي اختبرته للتو.")}</p><div className="hero-chips"><span>3 {t("study trails", "مسارات للدراسة")}</span><span>{t("Conditional food/drink block", "قسم شرطي للطعام والشراب")}</span><span>{t("Street image task", "مهمة صورة الشارع")}</span><span>{t("Optional final feedback", "ملاحظات نهائية اختيارية")}</span><span>{t("Refresh-safe progress", "يحفظ التقدم عند التحديث")}</span></div><button className="primary-button hero-button" type="button" onClick={() => { mark("started_at"); setStage("language"); }}>{t("Begin", "ابدأ")}</button></div><div className="hero-card__media"><figure className="hero-photo-frame"><img src="/hero-madaba-sharp.jpg" alt={t("Madaba heritage walking street", "شارع مشي تراثي في مادبا")} /><figcaption><span>{t("Madaba heritage walking environment", "بيئة مشي تراثية في مادبا")}</span><b>MPA · INDEX</b></figcaption></figure></div></section>}
     {stage === "language" && <section className="simple-card"><p className="eyebrow">Language · اللغة</p><h1>{t("Choose your questionnaire language", "اختر لغة الاستبيان")}</h1><div className="language-choice"><button type="button" onClick={() => { setLanguage("en"); setStage("consent"); }}>English<span>Continue in English →</span></button><button type="button" onClick={() => { setLanguage("ar"); setStage("consent"); }}>العربية<span>المتابعة باللغة العربية ←</span></button></div></section>}
     {stage === "consent" && <section className="simple-card consent-card"><p className="eyebrow">{t("Eligibility and consent", "الأهلية والموافقة")}</p><h1>{t("Before you begin", "قبل أن تبدأ")}</h1><div className="consent-copy"><p>{t("Complete this questionnaire only if you are 18 years or older and have walked on this trail for at least 10 minutes today. Participation is voluntary and anonymous.", "أكمل هذا الاستبيان فقط إذا كان عمرك 18 عاماً أو أكثر، وإذا كنت قد مشيت على هذا المسار لمدة لا تقل عن 10 دقائق اليوم. المشاركة طوعية ومجهولة الهوية.")}</p><p>{t("The approved participant information and consent procedure must be provided separately before this questionnaire.", "يجب تقديم معلومات المشارك وإجراء الموافقة المعتمدين بشكل منفصل قبل هذا الاستبيان.")}</p></div><label className="consent-check"><input type="checkbox" checked={consentAccepted} onChange={(event) => setConsentAccepted(event.target.checked)} /><span>{t("I confirm that I meet the eligibility criteria and agree to participate.", "أؤكد أنني أستوفي معايير الأهلية وأوافق على المشاركة.")}</span></label><button className="primary-button full-button" type="button" disabled={!consentAccepted} onClick={() => { mark("consent_accepted_at"); mark("core_started_at"); setStage("survey"); }}>{t("Start questionnaire", "بدء الاستبيان")}</button></section>}
     {stage === "survey" && renderSurvey()}

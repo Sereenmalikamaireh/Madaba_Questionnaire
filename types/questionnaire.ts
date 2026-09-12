@@ -21,7 +21,6 @@ export type QuestionTheme =
   | "satisfaction"
   | "memory"
   | "security"
-  | "identity"
   | "place_identity"
   | "place_dependence";
 

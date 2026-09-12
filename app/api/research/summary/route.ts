@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getServerSupabase } from "@/lib/serverSupabase";
+import { STUDY_VERSION } from "@/config/study";
 
 export const runtime = "nodejs";
 
@@ -22,7 +23,7 @@ export async function GET(request: Request) {
 
   try {
     const supabase = getServerSupabase();
-    const { data, error } = await supabase.from("submissions").select("id,completion_status,selected_trail_id,started_at,completed_at,language_selected,created_at").order("created_at", { ascending: false }).limit(5000);
+    const { data, error } = await supabase.from("submissions").select("id,completion_status,selected_trail_id,started_at,completed_at,language_selected,created_at").eq("questionnaire_version", STUDY_VERSION).order("created_at", { ascending: false }).limit(5000);
     if (error) throw error;
     const rows = data ?? [];
     const completed = rows.filter((row: any) => row.completion_status === "completed");

@@ -1,4 +1,5 @@
 import { getServerSupabase } from "@/lib/serverSupabase";
+import { STUDY_VERSION } from "@/config/study";
 
 export const runtime = "nodejs";
 
@@ -18,6 +19,7 @@ export async function GET(request: Request) {
     const { data: submissions, error: submissionError } = await supabase
       .from("submissions")
       .select("*")
+      .eq("questionnaire_version", STUDY_VERSION)
       .order("created_at", { ascending: true })
       .limit(5000);
     if (submissionError) throw submissionError;
@@ -62,8 +64,8 @@ export async function GET(request: Request) {
       "O1","O2","O3","O4",
       "T1","T2","T3","T4","T5",
       "G1","G_CONSUMED","G2","G3","G4","G5",
-      "CTX1","CTX2",
-      "SAT1","SAT2","MEM1","MEM2","SEC1","SEC2","ID1","ID2",
+      "CTX1","CTX2","CTX3",
+      "SAT1","SAT2","SAT3","MEM1","MEM2","MEM3","SEC1","SEC2","SEC3",
       "PI1","PI2","PI3","PD1","PD2","PD3"
     ];
     const supplementalOrder = ["OPEN1","TRAIL_IMAGE_FEATURES","TRAIL_IMAGE_DOMINANT"];

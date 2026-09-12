@@ -2785,7 +2785,7 @@ body {
   .age-timeline--six { grid-template-columns: 1fr; }
 }
 
-/* FINAL v22 open-ended feedback */
+/* FINAL v23 open-ended feedback */
 .theme-feedback { --theme: #6B7185; }
 .stage-progress__labels--seven { grid-template-columns: repeat(7, minmax(0, 1fr)); }
 .open-feedback-wrap {

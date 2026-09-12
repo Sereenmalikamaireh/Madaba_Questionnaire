@@ -37,7 +37,6 @@ const sectionPalettes: Record<string, SectionPalette> = {
   satisfaction: { label: { en: "Satisfaction", ar: "الرضا" }, start: "#C18862", mid: "#F1E5DA", end: "#A96E4B", ink: "#85583C" },
   memory: { label: { en: "Memory", ar: "الذاكرة" }, start: "#8D7EAF", mid: "#E9E5F0", end: "#756B9D", ink: "#5E5683" },
   security: { label: { en: "Perceived security", ar: "الأمان المدرك" }, start: "#7899AA", mid: "#E4EAED", end: "#587A8E", ink: "#416176" },
-  identity: { label: { en: "Heritage identity resonance", ar: "صدى الهوية التراثية" }, start: "#A97B83", mid: "#EEE4E6", end: "#8E626D", ink: "#714D57" },
   place_identity: { label: { en: "Place identity", ar: "هوية المكان" }, start: "#88986F", mid: "#E8EBDD", end: "#6A7D57", ink: "#536344" },
   place_dependence: { label: { en: "Place dependence", ar: "الاعتماد على المكان" }, start: "#6A9690", mid: "#E1EBE9", end: "#527B79", ink: "#3F6260" },
 };
