@@ -1,5 +1,5 @@
 import { getServerSupabase } from "@/lib/serverSupabase";
-import { STUDY_VERSION } from "@/config/study";
+import { STUDY_VERSION, trailImages } from "@/config/study";
 
 export const runtime = "nodejs";
 
@@ -7,6 +7,19 @@ function csvCell(value: unknown) {
   if (value === null || value === undefined) return "";
   const text = String(value);
   return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
+function chunks<T>(items: T[], size: number) {
+  const result: T[][] = [];
+  for (let i = 0; i < items.length; i += size) result.push(items.slice(i, i + size));
+  return result;
+}
+function parseMarkers(value?: string) {
+  if (!value) return [] as Array<{ x: number; y: number }>;
+  try {
+    const parsed = JSON.parse(value);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((row) => ({ x: Number(row?.x), y: Number(row?.y) })).filter((row) => Number.isFinite(row.x) && Number.isFinite(row.y)).slice(0, 3);
+  } catch { return []; }
 }
 
 export async function GET(request: Request) {
@@ -23,18 +36,17 @@ export async function GET(request: Request) {
       .order("created_at", { ascending: true })
       .limit(5000);
     if (submissionError) throw submissionError;
+
     const rows = submissions ?? [];
     const ids = rows.map((row: any) => row.id);
     const allAnswers: any[] = [];
-
-    if (ids.length) {
-      // Supabase projects often cap response pages; page explicitly instead of silently truncating answers.
+    for (const idChunk of chunks(ids, 100)) {
       const PAGE = 1000;
       for (let start = 0; ; start += PAGE) {
         const { data, error } = await supabase
           .from("answers")
           .select("submission_id,question_id,answer_value,answered_at,response_ms,answer_meta")
-          .in("submission_id", ids)
+          .in("submission_id", idChunk)
           .order("submission_id", { ascending: true })
           .range(start, start + PAGE - 1);
         if (error) throw error;
@@ -45,12 +57,12 @@ export async function GET(request: Request) {
     }
 
     const answerMap = new Map<string, Record<string, string>>();
-    const questionIds = new Set<string>();
+    const imageMetaMap = new Map<string, Record<string, any>>();
     allAnswers.forEach((answer) => {
-      questionIds.add(answer.question_id);
       const record = answerMap.get(answer.submission_id) ?? {};
       record[answer.question_id] = answer.answer_value ?? "";
       answerMap.set(answer.submission_id, record);
+      if (answer.question_id === "TRAIL_IMAGE_FEATURES") imageMetaMap.set(answer.submission_id, answer.answer_meta ?? {});
     });
 
     const baseColumns = [
@@ -68,16 +80,26 @@ export async function GET(request: Request) {
       "SAT1","SAT2","SAT3","MEM1","MEM2","MEM3","SEC1","SEC2","SEC3",
       "PI1","PI2","PI3","PD1","PD2","PD3"
     ];
-    const supplementalOrder = ["OPEN1","TRAIL_IMAGE_FEATURES","TRAIL_IMAGE_DOMINANT"];
-    const answerColumns = [...coreOrder.filter((id) => questionIds.has(id)), "OPEN1", ...supplementalOrder.filter((id) => id !== "OPEN1" && questionIds.has(id))];
-    const header = [...baseColumns, ...answerColumns];
+    const imageColumns = ["trail_image_id","trail_image_src","point_1_x","point_1_y","point_2_x","point_2_y","point_3_x","point_3_y"];
+    const header = [...baseColumns, ...coreOrder, ...imageColumns];
     const lines = [header.map(csvCell).join(",")];
+
     rows.forEach((submission: any) => {
       const answers = answerMap.get(submission.id) ?? {};
-      lines.push(header.map((column) => csvCell(column in submission ? submission[column] : answers[column] ?? "")).join(","));
+      const markers = parseMarkers(answers.TRAIL_IMAGE_FEATURES);
+      const meta = imageMetaMap.get(submission.id) ?? {};
+      const configuredImage = trailImages.find((image) => image.trailId === submission.selected_trail_id);
+      const extra: Record<string, unknown> = {
+        trail_image_id: meta.image_id ?? configuredImage?.id ?? "",
+        trail_image_src: meta.image_src ?? configuredImage?.src ?? "",
+        point_1_x: markers[0]?.x ?? "", point_1_y: markers[0]?.y ?? "",
+        point_2_x: markers[1]?.x ?? "", point_2_y: markers[1]?.y ?? "",
+        point_3_x: markers[2]?.x ?? "", point_3_y: markers[2]?.y ?? "",
+      };
+      lines.push(header.map((column) => csvCell(column in submission ? submission[column] : column in extra ? extra[column] : answers[column] ?? "")).join(","));
     });
 
-    const filename = `mpa-index-export-${new Date().toISOString().slice(0, 10)}.csv`;
+    const filename = `mpa-index-final-v24-export-${new Date().toISOString().slice(0, 10)}.csv`;
     return new Response(lines.join("\n"), {
       headers: {
         "Content-Type": "text/csv; charset=utf-8",

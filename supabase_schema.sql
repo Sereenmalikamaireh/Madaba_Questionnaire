@@ -1,5 +1,5 @@
--- MPA-Index FINAL v23 schema
--- Three study routes. Core responses plus optional supplemental route-image annotations are stored in the answers table.
+-- MPA-Index FINAL v24 schema
+-- Three study routes. Core responses plus exactly three route-image click coordinates are stored in the answers table.
 -- Writes occur through the server-side Next.js API route using the Supabase service role.
 
 create table if not exists submissions (

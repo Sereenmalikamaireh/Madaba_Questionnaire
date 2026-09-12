@@ -1,0 +1,29 @@
+MPA-Index FINAL v24 source audit
+================================
+Core questionnaire source: thesis questionnaire English- after pilot test - 3 mediators.docx
+
+Verified core structure retained:
+- Eligibility: age 18+ and at least 10 minutes walking on the trail today.
+- Trail: T1 Prince Hasan St.; T2 Al-Hussain Bin Ali St.; T3 King Talal St.
+- Section A: A1-A7.
+- Visual: V1-V6.
+- Auditory: A1-A6 stored internally as AUD1-AUD6 to avoid collision with participant-profile A1-A6.
+- Olfactory: O1-O4.
+- Tactile/walking surface: T1-T5.
+- Gustatory: G1, consumption gate, G2-G5 if Yes.
+- Context: CTX1-CTX3.
+- Satisfaction: SAT1-SAT3.
+- Memory: MEM1-MEM3.
+- Perceived security: SEC1-SEC3.
+- Place identity: PI1-PI3.
+- Place dependence: PD1-PD3.
+
+FINAL v24 interface requirements implemented:
+- full question wording retained;
+- grouped construct screens with aligned compact sliders;
+- Neutral replaces Neither at response 3;
+- percentage completion replaces item-count progress;
+- exactly three route-image clicks with no meanings/tags/dominant marker;
+- final open-ended feedback removed;
+- researcher dashboard renders stored clicks on the route image and downloads annotated PNGs;
+- Excel-ready exports include six click-coordinate columns.

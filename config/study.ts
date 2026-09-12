@@ -1,12 +1,12 @@
 import type { Question, QuestionOption, Trail, TrailImage } from "@/types/questionnaire";
 
-export const STUDY_VERSION = "23.0.0-after-pilot-3-mediators";
-export const STORAGE_KEY = "mpa_index_questionnaire_final_v23";
+export const STUDY_VERSION = "24.0.0-final-grouped-image-clicks";
+export const STORAGE_KEY = "mpa_index_questionnaire_final_v24";
 
 export const likertAgreementOptions: QuestionOption[] = [
   { value: "1", label: { en: "Strongly disagree", ar: "لا أوافق بشدة" } },
   { value: "2", label: { en: "Disagree", ar: "لا أوافق" } },
-  { value: "3", label: { en: "Neither", ar: "لا أوافق ولا أعترض" } },
+  { value: "3", label: { en: "Neutral", ar: "محايد" } },
   { value: "4", label: { en: "Agree", ar: "أوافق" } },
   { value: "5", label: { en: "Strongly agree", ar: "أوافق بشدة" } },
 ];

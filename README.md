@@ -1,57 +1,76 @@
-# MPA-Index Thesis Questionnaire — FINAL v23
+# MPA-Index Thesis Questionnaire — FINAL v24
 
-This is the post-pilot thesis questionnaire build based on `thesis questionnaire English- after pilot test - 3 mediators.docx`.
+This build uses the post-pilot three-mediator questionnaire as the authoritative core instrument and implements the final field-interface requirements.
 
-The FINAL v23 build preserves the established fieldwork system while replacing the core English questionnaire items with the post-pilot instrument:
+## Participant interface
 
-- three real route photographs
-- section-colored segmented 1–5 agreement control
-- refresh-safe local progress persistence
-- Reset-to-beginning control with confirmation
-- offline queue / Supabase research-database submission flow
-- selected-route image annotation task retained as supplemental data
-- optional final open-ended questionnaire feedback retained as supplemental data
-- a new local-storage key so v22 pilot answers cannot be restored into v23 sessions
-- researcher dashboard/CSV export restricted to FINAL v23 records so pilot records are not mixed with final fieldwork
+- Full post-pilot question wording is retained; item wording is not shortened.
+- Likert items are grouped by construct on one screen rather than one question per screen.
+- Within each group, full statements appear in a fixed left column and aligned compact 1–5 sliders appear in a fixed right column.
+- The agreement legend appears once per group.
+- Response option 3 is **Neutral** (Arabic: **محايد**) rather than “Neither”.
+- Participant-facing item codes/question counts are hidden.
+- A completion percentage and progress bar replace question-number progress.
+- Conditional food/drink logic is retained: G2–G5 appear only after Yes to the consumption question.
+- Refresh-safe local persistence, reset, offline queue, and Supabase submission remain enabled.
 
-## FINAL v23 questionnaire structure
+## Final route-image task
 
-- Trail identification: T1 Prince Hasan St.; T2 Al-Hussain Bin Ali St.; T3 King Talal St.
-- Section A: A1–A7 participant/field-record questions
-- Section B: V1–V6, A1–A6 auditory, O1–O4, T1–T5, G1, conditional food/drink question, G2–G5 when applicable
-- Section C: CTX1–CTX3 (contextual / not Fuzzy-AHP weighted)
-- Section D: three psychological mediators only: SAT1–SAT3, MEM1–MEM3, SEC1–SEC3
-- Section E: PI1–PI3, PD1–PD3
-- Removed from the post-pilot core instrument: former D4 / ID1–ID2 block
+The participant sees the image for the selected trail and must click **exactly three points on the image**. There is no category, interpretation, dominant-point, or other entry. The three normalized `(x,y)` coordinates are stored as `TRAIL_IMAGE_FEATURES` together with trail/image metadata.
 
-If the participant answers **No** to consuming food/drink on or immediately beside the trail, G2–G5 are skipped automatically and any previously entered G2–G5 answers are cleared.
+## Removed
+
+- The final open-ended feedback question (`OPEN1`) is removed.
+- Image meaning/tag selection is removed.
+- Dominant image marker selection (`TRAIL_IMAGE_DOMINANT`) is removed.
+
+## Researcher analysis page
+
+Open `/research` and enter `RESEARCH_DASHBOARD_KEY`.
+
+The dashboard provides:
+
+- completion and route-distribution metrics;
+- item-level N, mean, and 1–5 response frequencies;
+- participant route images with the three stored click points overlaid;
+- raw point coordinates beside each image;
+- per-participant **Download annotated PNG**;
+- Excel-ready CSV export with questionnaire responses plus `point_1_x/y`, `point_2_x/y`, and `point_3_x/y`.
 
 ## Database compatibility
 
-No Supabase table migration is required when upgrading from v22. Question IDs are stored as text in the existing `answers` table. New final records are tagged with questionnaire version `23.0.0-after-pilot-3-mediators`.
+No Supabase table migration is required from v23. FINAL v24 records are tagged with:
 
-## Excel-ready export
+`24.0.0-final-grouped-image-clicks`
 
-`FINAL_V23_EXCEL_EXPORT.sql` produces one row per completed FINAL v23 participant, includes the updated CTX3/SAT3/MEM3/SEC3 items, parses the three street-image markers into separate columns, derives the dominant image-feature tag, and includes the final open-ended feedback.
+The new local-storage key is:
 
-## Windows launch
+`mpa_index_questionnaire_final_v24`
+
+This prevents unfinished older sessions from being restored into FINAL v24.
+
+## Excel-ready SQL
+
+`FINAL_V24_EXCEL_EXPORT.sql` returns one row per completed FINAL v24 participant and flattens the three image clicks into six numeric coordinate columns.
+
+## Local Windows launch
 
 Run:
 
-`RUN_FINAL_V23_WINDOWS.bat`
+`RUN_FINAL_V24_WINDOWS.bat`
 
-Dedicated local URL:
+Participant URL:
 
-`http://127.0.0.1:4222/thesis-v23?build=23`
+`http://127.0.0.1:4222/thesis-v24?build=24`
 
-The launcher verifies the v23 source, clears the old `.next` cache, runs a production build, starts the server, verifies the served questionnaire, then opens the browser.
+Researcher dashboard:
 
-## Deployment
+`http://127.0.0.1:4222/research`
 
-For Vercel/Supabase deployment, configure these server/environment variables without committing real secrets:
+## Vercel/Supabase environment variables
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `RESEARCH_DASHBOARD_KEY`
 
-`.env.local` is ignored by Git.
+Do not commit `.env.local` or any real secret values.

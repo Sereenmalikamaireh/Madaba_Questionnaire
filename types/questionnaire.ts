@@ -63,19 +63,8 @@ export type TrailImage = {
   };
 };
 
-export type FeatureTag =
-  | "visual_character"
-  | "sound_source"
-  | "smell_source"
-  | "materials_textures"
-  | "history_memory"
-  | "cultural_identity"
-  | "safety"
-  | "activity_atmosphere";
-
 export type FeatureMarker = {
   id: string;
   x: number;
   y: number;
-  tag?: FeatureTag;
 };

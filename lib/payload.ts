@@ -1,8 +1,5 @@
 import { questions, STUDY_VERSION } from "@/config/study";
-import type { FeatureMarker, Language } from "@/types/questionnaire";
-
-const NULLABLE_RESPONSE_MS_FIXED_V23 = "NULLABLE_RESPONSE_MS_FIXED_V23";
-void NULLABLE_RESPONSE_MS_FIXED_V23;
+import type { FeatureMarker, Language, TrailImage } from "@/types/questionnaire";
 
 export type SubmissionPayload = {
   submission: Record<string, unknown>;
@@ -27,9 +24,9 @@ export function buildSubmissionPayload(args: {
   responseMs: Record<string, number>;
   timestamps: Record<string, string>;
   featureMarkers?: FeatureMarker[];
-  dominantMarkerId?: string | null;
+  selectedTrailImage?: TrailImage;
 }): SubmissionPayload {
-  const { submissionId, language, selectedTrailId, answers, answeredAt, responseMs, timestamps, featureMarkers = [], dominantMarkerId = null } = args;
+  const { submissionId, language, selectedTrailId, answers, answeredAt, responseMs, timestamps, featureMarkers = [], selectedTrailImage } = args;
   const coreMeta = new Map<string, Record<string, unknown>>(questions.map((question) => [question.id, {
     section: question.section,
     theme: question.theme,
@@ -41,17 +38,6 @@ export function buildSubmissionPayload(args: {
     instrument_role: "core_mpa",
   }] as [string, Record<string, unknown>]));
 
-  coreMeta.set("OPEN1", {
-    section: "participant_feedback",
-    theme: "feedback",
-    display_code: "OPEN1",
-    reverse_scored: false,
-    fuzzy_ahp_weighted: false,
-    conditional_gustatory: false,
-    type: "open_text",
-    instrument_role: "supplemental_feedback",
-  });
-
   const answerRows: AnswerRow[] = Object.entries(answers).map(([questionId, answerValue]) => ({
     submission_id: submissionId,
     question_id: questionId,
@@ -61,25 +47,22 @@ export function buildSubmissionPayload(args: {
     answer_meta: coreMeta.get(questionId) ?? { section: "core", type: "unknown", instrument_role: "core_mpa" },
   }));
 
-  if (featureMarkers.length > 0) {
+  if (featureMarkers.length === 3) {
     answerRows.push({
       submission_id: submissionId,
       question_id: "TRAIL_IMAGE_FEATURES",
       answer_value: JSON.stringify(featureMarkers),
       answered_at: timestamps.image_completed_at ?? timestamps.completed_at ?? new Date().toISOString(),
       response_ms: null,
-      answer_meta: { section: "image_task", type: "annotation", instrument_role: "supplemental", trail_id: selectedTrailId },
-    });
-  }
-
-  if (dominantMarkerId) {
-    answerRows.push({
-      submission_id: submissionId,
-      question_id: "TRAIL_IMAGE_DOMINANT",
-      answer_value: dominantMarkerId,
-      answered_at: timestamps.image_completed_at ?? timestamps.completed_at ?? new Date().toISOString(),
-      response_ms: null,
-      answer_meta: { section: "image_task", type: "single_choice", instrument_role: "supplemental", trail_id: selectedTrailId },
+      answer_meta: {
+        section: "image_task",
+        type: "three_point_annotation",
+        instrument_role: "supplemental",
+        trail_id: selectedTrailId,
+        image_id: selectedTrailImage?.id ?? null,
+        image_src: selectedTrailImage?.src ?? null,
+        point_count: 3,
+      },
     });
   }
 

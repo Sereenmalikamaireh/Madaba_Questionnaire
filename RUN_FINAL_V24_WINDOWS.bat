@@ -3,20 +3,18 @@ setlocal EnableExtensions EnableDelayedExpansion
 cd /d "%~dp0"
 set NEXT_TELEMETRY_DISABLED=1
 set FINAL_PORT=4222
-set FINAL_URL=http://127.0.0.1:%FINAL_PORT%/thesis-v22?build=22
+set FINAL_URL=http://127.0.0.1:%FINAL_PORT%/thesis-v24?build=24
 
 echo ============================================================
-echo   MPA-Index THESIS QUESTIONNAIRE - FINAL v22
-echo   Thesis items + final optional open-ended feedback
-
-echo   Segmented scales + refresh-safe progress + Reset
-
+echo   MPA-Index THESIS QUESTIONNAIRE - FINAL v24
+echo   Grouped compact scales + 3-point route-image task
+echo   Research analysis dashboard with annotated image downloads
 echo   URL: %FINAL_URL%
 echo ============================================================
 echo.
 
-echo [1/8] Verifying FINAL v22 source...
-call VERIFY_FINAL_V22_WINDOWS.bat
+echo [1/8] Verifying FINAL v24 source...
+call VERIFY_FINAL_V24_WINDOWS.bat
 if errorlevel 1 goto :badsource
 
 echo [2/8] Checking Node.js/npm...
@@ -31,9 +29,7 @@ if not exist "node_modules" (
 )
 
 echo [4/8] Stopping anything already using port %FINAL_PORT%...
-for /f "tokens=5" %%P in ('netstat -ano ^| findstr ":%FINAL_PORT%" ^| findstr "LISTENING"') do (
-  taskkill /PID %%P /F >nul 2>nul
-)
+for /f "tokens=5" %%P in ('netstat -ano ^| findstr ":%FINAL_PORT%" ^| findstr "LISTENING"') do taskkill /PID %%P /F >nul 2>nul
 
 echo [5/8] Removing old Next.js cache...
 if exist ".next" rmdir /s /q ".next"
@@ -42,11 +38,8 @@ echo [6/8] Production build...
 call npm run build
 if errorlevel 1 goto :buildfail
 
-echo BUILD PASSED.
-
-echo [7/8] Starting FINAL v22 production server...
-start "MPA-Index FINAL v22 Server" /D "%CD%" cmd /k "npm run start:final"
-
+echo [7/8] Starting FINAL v24 production server...
+start "MPA-Index FINAL v24 Server" /D "%CD%" cmd /k "npm run start:final"
 set /a tries=0
 :waitserver
 set /a tries+=1
@@ -55,22 +48,20 @@ timeout /t 1 /nobreak >nul
 powershell -NoProfile -ExecutionPolicy Bypass -Command "try { $r=Invoke-WebRequest -UseBasicParsing -Uri '%FINAL_URL%' -TimeoutSec 3; if($r.StatusCode -eq 200){ exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>nul
 if errorlevel 1 goto :waitserver
 
-echo [8/8] Verifying served FINAL v22 page...
+echo [8/8] Verifying served FINAL v24 page...
 powershell -NoProfile -ExecutionPolicy Bypass -Command "$r=Invoke-WebRequest -UseBasicParsing -Uri '%FINAL_URL%' -TimeoutSec 5; if($r.Content -match 'THESIS QUESTIONNAIRE'){ exit 0 } else { exit 1 }" >nul 2>nul
 if errorlevel 1 goto :wrongserved
 
-echo PASS: served page is FINAL v22.
+echo PASS: served page is FINAL v24.
 start "" "%FINAL_URL%"
 echo.
-echo Confirm the badge reads: THESIS QUESTIONNAIRE - FINAL v22
-echo The final feedback question is optional and saved with the submission.
-echo Progress is restored after refresh. Reset is available in the top bar.
+echo Research dashboard: http://127.0.0.1:%FINAL_PORT%/research
 echo.
 pause
 exit /b 0
 
 :badsource
-echo ERROR: FINAL v22 source verification failed.
+echo ERROR: FINAL v24 source verification failed.
 goto :fail
 :nonode
 echo ERROR: Node.js was not found.
@@ -82,16 +73,16 @@ goto :fail
 echo ERROR: npm install failed.
 goto :fail
 :buildfail
-echo ERROR: Production build failed. The questionnaire was not launched.
+echo ERROR: Production build failed.
 goto :fail
 :serverfail
-echo ERROR: FINAL v22 server did not become ready on port %FINAL_PORT%.
+echo ERROR: FINAL v24 server did not become ready on port %FINAL_PORT%.
 goto :fail
 :wrongserved
-echo ERROR: The page served on port %FINAL_PORT% is not FINAL v22.
+echo ERROR: The served page did not pass verification.
 goto :fail
 :fail
 echo.
-echo FINAL v22 did not launch.
+echo FINAL v24 did not launch.
 pause
 exit /b 1

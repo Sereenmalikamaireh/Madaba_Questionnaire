@@ -1,6 +1,6 @@
 {
-  "name": "mpa-index-questionnaire-thesis-v23",
-  "version": "23.0.0",
+  "name": "mpa-index-questionnaire-thesis-v24",
+  "version": "24.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
